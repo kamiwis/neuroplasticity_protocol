@@ -2,7 +2,7 @@
 
 This application is for timing your work/learning intervals.
 
-It utilizes the following imported modules: `tkinter` and 'time' """
+It utilizes the following imported modules: `tkinter` and 'math' """
 from tkinter import *
 import math
 
@@ -12,14 +12,27 @@ RED = "#e7305b"
 GREEN = "#9bdeac"
 YELLOW = "#f7f5dd"
 FONT_NAME = "Courier"
-WORK_MIN = 1
+WORK_MIN = 25
 SHORT_BREAK_MIN = 5
 LONG_BREAK_MIN = 20
 CHECKMARK = "✓"
 reps = 0
+timer = None
+marks = ""
 
 # ---------------------------- TIMER RESET ------------------------------- # 
-
+def reset_timer():
+    global reps
+    # Cancel timer
+    window.after_cancel(timer)
+    # Set timer_text back to 00:00
+    canvas.itemconfig(timer_text, text="00:00")
+    # Set timer_label back to Timer
+    timer_label.config(text="Timer", fg=GREEN)
+    # Reset marks to empyty string and change checkmarks
+    checkmark.config(text="")
+    reps = 0
+    
 # ---------------------------- TIMER MECHANISM ------------------------------- # 
 
 def start_timer():
@@ -50,14 +63,15 @@ def countdown(count):
         count_sec = f"0{count_sec}"
     canvas.itemconfig(timer_text, text=f"{count_min}:{count_sec}")
     if count > 0:
-        window.after(1000, countdown, count - 1)
+        global timer
+        timer = window.after(1000, countdown, count - 1)
     if count == 0:
         start_timer()
         num_work_sessions = reps // 2
-        mark = ""
+        marks = ""
         for _ in range(num_work_sessions):
-            mark += CHECKMARK
-        checkmark.config(text=f"{mark}")
+            marks += CHECKMARK
+        checkmark.config(text=f"{marks}")
 
 # ---------------------------- UI SETUP ------------------------------- #
 # Create window.
@@ -84,7 +98,7 @@ checkmark.grid(column=1, row=3)
 # Create buttons for Start and Reset.
 start = Button(text="Start", highlightbackground=YELLOW, fg=GREEN, command=start_timer)
 start.grid(column=0, row=2)
-reset = Button(text="Reset", highlightbackground=YELLOW, fg=GREEN)
+reset = Button(text="Reset", highlightbackground=YELLOW, fg=GREEN, command=reset_timer)
 reset.grid(column=2, row=2)
 
 window.mainloop()
