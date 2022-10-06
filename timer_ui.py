@@ -2,7 +2,6 @@ from random import randint
 from tkinter import *
 import math
 import chime
-from timer_text import prompt_text
 
 BACKGROUND_COLOR = "#6e8ee5"
 TITLE_COLOR = "#05132d"
@@ -11,38 +10,40 @@ GREEN = "#9bdeac"
 YELLOW = "#f7f5dd"
 FONT_NAME = "Arial"
 WORK_MIN = 1
-REST_SEC = 11
+# REST_SEC = 11
 SHORT_BREAK_MIN = 1
 CHECKMARK = "✓"
+PROMPT = "How many 10 minute repetitions would you like to do? (Max=9)"
 
 class TimerInterface():
     """
     A class used to represent the GUI for the Neuroplasticity Timer.
     ...
 
-    Attributes
-    __________
-    reps: number of repetitions of learning completed.
-    timer: the time the timer is set to for each work/break rep.
-    marks: checkmark string denoting how many reps have been completed.
+    Attributes:
+        reps (int): number of repetitions of learning completed.
+        total_reps (int): number of total repetitions needed based on user input.
+        marks (str): checkmark string denoting how many reps have been completed.
+        status (str): status of current timer mode - None, "work", or "break".
 
     Methods
-    _______
-    start_timer()
-        Sets time for number of minutes depending on the rep.
-    countdown(self, count)
-        Takes a time as the argument and countsdown from that time to 0.
-    reset_timer(self)
-        Resets timer once four reps have been done.
+        start_timer(self)
+            Sets time for number of minutes depending on the rep.
+        countdown(self, count)
+            Takes a time as the argument and countsdown from that time to 0.
+        reset_timer(self)
+            Resets timer once four reps have been done.
+        rest_chime(self):
+            Generates chime to indicate rest time.
     """
+
     def __init__(self):
+        """The constructor of the TimerInterface class."""
         self.reps = 0
         self.total_reps = 0
-        self.num_work_sessions = 0
         self.status = None
-        self.timer = None
         self.marks = ""
-        self.rest_times = [randint(1,9), randint(1,9), randint(1,9), randint(1,9)]
+        self.timer = None
         # Create window.
         self.window = Tk()
         self.window.title("Neuroplasticity Timer")
@@ -56,7 +57,7 @@ class TimerInterface():
         # Create canvas for window.
         self.canvas = Canvas(width=500, height=300, bg=BACKGROUND_COLOR, highlightthickness=0)
         # # Adds tomoato image to canvas and displays it on the window.
-        self.timer_text = self.canvas.create_text(250, 150, width=480, text=prompt_text, fill=TITLE_COLOR, font=(FONT_NAME, 25, "bold"))
+        self.timer_text = self.canvas.create_text(250, 150, width=480, text=PROMPT, fill=TITLE_COLOR, font=(FONT_NAME, 25, "bold"))
         self.canvas.grid(column=0, row=1, columnspan=3)
 
         # self.prompt = Label(text=prompt_text, fg=TITLE_COLOR, bg=BACKGROUND_COLOR, font=(FONT_NAME, 20, "bold"))
@@ -84,7 +85,7 @@ class TimerInterface():
         """Sets time for number of minutes depending on the rep."""
         # Set the reps remaining to the user's input * 2.
         if self.total_reps == 0:
-            self.reps_left = int(self.entry.get()) * 2
+            self.total_reps = int(self.entry.get()) * 2
         self.reps += 1
         work_sec = WORK_MIN * 60
         break_sec = SHORT_BREAK_MIN * 60
@@ -107,42 +108,22 @@ class TimerInterface():
         """Takes a time as the argument and countsdown from that time to 0."""
         count_min = math.floor(count / 60)
         count_sec = count % 60
-        if count_min % 2 == 0 and count_sec == 5:
-            chime.theme("big-sur")
-            chime.success()
-        # Reformat countdown when at 0 seconds.
         if count_sec == 0:
             count_sec = "00"
         # Reformat countdown when less than 10 seconds.
         if count < 10:
             count_sec = f"0{count_sec}"
+        if self.status == "work" and count_min % 2 == 0 and count_sec == "05":
+            chime.theme("big-sur")
+            chime.success()
         self.canvas.itemconfig(self.timer_text, text=f"{count_min}:{count_sec}", font=(FONT_NAME, 45, "bold"))
-        # Sound chime when time for random rest.
-        # if self.status == "work":
-        #     if count_min == 2 and count_sec == f"0{self.rest_times[0]}":
-        #         self.rest_chime()
-        #         if count_min == 1 and count_sec == 60 + (self.rest_times[0] - REST_SEC):
-        #             self.rest_chime()
-        #     if count_min == 4 and count_sec == f"0{self.rest_times[1]}":
-        #         self.rest_chime()
-        #         if count_min == 3 and count_sec == 60 + (self.rest_times[1] - REST_SEC):
-        #             self.rest_chime()
-        #     if count_min == 6 and count_sec == self.rest_times[2]:
-        #         self.rest_chime()
-        #         if count_min == 5 and count_sec == 60 + (self.rest_times[2] - REST_SEC):
-        #             self.rest_chime()
-        #     if count_min == 8 and count_sec == self.rest_times[3]:
-        #         self.rest_chime()
-        #         if count_min == 7 and count_sec == 60 + (self.rest_times[3] - REST_SEC):
-        #             self.rest_chime()
         # Countdown timer.
         if count > 0:
             self.timer = self.window.after(1000, self.countdown, count - 1)
         if count == 0:
             self.start_timer()
-            num_work_sessions = self.reps // 2
             self.marks = ""
-            for _ in range(num_work_sessions):
+            for _ in range(self.reps // 2):
                 self.marks += CHECKMARK
             self.checkmark.config(text=f"{self.marks}")
 
@@ -151,7 +132,7 @@ class TimerInterface():
         # Cancel timer
         self.window.after_cancel(self.timer)
         # Set timer_text back to 00:00
-        #self.canvas.itemconfig(self.timer_text, text="00:00")
+        self.canvas.itemconfig(self.timer_text, text="Neuroplasticity Timer", font=(FONT_NAME, 50, "bold"))
         # Set timer_label back to Timer
         self.timer_label.config(text="Neuroplasticity Timer", fg="white")
         # Reset marks to empyty string and change checkmarks
