@@ -1,0 +1,1 @@
+prompt_text = "How many 10 minute repetitions would you like to do? (Max=9)"
