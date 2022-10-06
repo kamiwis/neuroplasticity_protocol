@@ -71,11 +71,11 @@ class TimerInterface():
         self.checkmark.grid(column=1, row=2)
 
         #Create buttons for Start and Reset.
-        start_img = PhotoImage(file="images/start.png")
+        start_img = PhotoImage(file="button_images/start.png")
         self.true_button = Button(image=start_img, highlightthickness=0, command=self.start_timer)
         self.true_button.grid(row=2, column=0)
 
-        reset_img = PhotoImage(file="images/reset.png")
+        reset_img = PhotoImage(file="button_images/reset.png")
         self.true_button = Button(image=reset_img, highlightthickness=0, command=self.reset_timer)
         self.true_button.grid(row=2, column=2)
 
