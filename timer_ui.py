@@ -24,11 +24,11 @@ class TimerInterface():
         status (str): status of current timer mode - None, "work", or "break".
 
     Methods
-        start_timer(self)
+        start_timer(self):
             Sets time for number of minutes depending on the rep.
-        countdown(self, count)
+        countdown(self, count):
             Takes a time as the argument and countsdown from that time to 0.
-        reset_timer(self)
+        reset_timer(self):
             Resets timer once four reps have been done.
         rest_chime(self):
             Generates chime to indicate rest time.
@@ -57,9 +57,7 @@ class TimerInterface():
         self.timer_text = self.canvas.create_text(250, 150, width=480, text=PROMPT, fill=TITLE_COLOR, font=(FONT_NAME, 25, "bold"))
         self.canvas.grid(column=0, row=1, columnspan=3)
 
-        # self.prompt = Label(text=prompt_text, fg=TITLE_COLOR, bg=BACKGROUND_COLOR, font=(FONT_NAME, 20, "bold"))
-        # self.prompt.grid(row=1, column=0, columnspan=2)
-
+        # Create text box for user input.
         self.entry = Entry(width=10)
         self.entry.insert(0, string="1")
         self.canvas.create_window(250, 220, window=self.entry)
@@ -90,7 +88,6 @@ class TimerInterface():
         if self.reps > self.total_reps:
             self.timer_label.config(text="DONE!", fg=RED)
             self.status = None
-            # self.countdown(long_break_sec)
         # If the number of reps is even, set work timer.
         if self.reps % 2 == 0:
             self.status = "break"
@@ -102,7 +99,7 @@ class TimerInterface():
             self.countdown(work_sec)
 
     def countdown(self, count):
-        """Takes a time as the argument and countsdown from that time to 0."""
+        """Takes a time as the argument and counts down from that time."""
         count_min = math.floor(count / 60)
         count_sec = count % 60
         if count_sec == 0:
