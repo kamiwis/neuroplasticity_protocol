@@ -1,16 +1,13 @@
 from random import randint
-from tkinter import *
+from tkinter import Tk, Canvas, Label, Entry, PhotoImage, Button
 import math
 import chime
 
 BACKGROUND_COLOR = "#6e8ee5"
 TITLE_COLOR = "#05132d"
 RED = "#e7305b"
-GREEN = "#9bdeac"
-YELLOW = "#f7f5dd"
 FONT_NAME = "Arial"
-WORK_MIN = 1
-# REST_SEC = 11
+WORK_MIN = 4
 SHORT_BREAK_MIN = 1
 CHECKMARK = "✓"
 PROMPT = "How many 10 minute repetitions would you like to do? (Max=9)"
@@ -80,7 +77,7 @@ class TimerInterface():
         self.true_button.grid(row=2, column=2)
 
         self.window.mainloop()
-    
+
     def start_timer(self):
         """Sets time for number of minutes depending on the rep."""
         # Set the reps remaining to the user's input * 2.
@@ -140,7 +137,7 @@ class TimerInterface():
         self.reps = 0
         self.total_reps = 0
         self.status = None
-    
+
     def rest_chime(self):
         """Generates chime to indicate rest time."""
         chime.theme("big-sur")
